@@ -20,4 +20,4 @@ Your Discord Webhook URL is a sensitive key. Anyone with this URL can send messa
 MIT License. See `LICENSE` for more details.
 
 ## Tos
-All functions of this application are idependent of the CON client. No data or information is scraped; the project intends to fall under TOS however we cannot guarantee with 100% certainty. 
+All functions of this application are idependent of the CON client. No data or information is scraped; the project intends to fall under TOS however we cannot guarantee with 100% certainty that it does. 
