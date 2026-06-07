@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #0a0a0a;">
+<head>
+  <title>CoN Timer</title>
+  <style>
+    /* All your existing styles remain the same */
+    html, body { margin: 0; padding: 0; background-color: #0a0a0a !important; overflow-x: hidden; }
+    .con-shell {
+      --bg: #0a0a0a; --surface: #111111; --border: #222222; --text-main: #efefef; --text-dim: #666666; --accent: #4fffb0; 
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: var(--bg); color: var(--text-main); padding: 24px; display: flex; flex-direction: column; gap: 32px; min-height: 100vh; box-sizing: border-box; border: none; -webkit-font-smoothing: antialiased;
+    }
+    .con-shell .label-tiny { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 8px; display: block; }
+    .con-shell .input-field { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text-main); padding: 8px 0; margin-bottom: 20px; outline: none; font-size: 14px; transition: border-color 0.3s ease; box-sizing: border-box; }
+    .con-shell .input-field:focus { border-bottom-color: var(--accent); }
+    
+    /* New style for the dropdown */
+    .con-shell .select-field { 
+      width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text-main); 
+      padding: 8px; margin-bottom: 20px; outline: none; font-size: 13px; cursor: pointer; 
+    }
+    .con-shell .select-field:focus { border-color: var(--accent); }
+
+    .con-shell .time-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 8px; width: 100%; box-sizing: border-box; }
+    .con-shell .time-unit { display: flex; align-items: baseline; gap: 4px; flex: 1; justify-content: center; }
+    .con-shell .time-unit input { width: 30px; background: transparent; border: none; color: var(--text-main); font-size: 16px; text-align: center; outline: none; padding: 0; -moz-appearance: textfield; }
+    .con-shell .time-unit input::-webkit-outer-spin-button, .con-shell .time-unit input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .con-shell .time-unit span { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
+    .con-shell .btn-primary { background: var(--accent); color: #000; border: none; padding: 12px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; width: 100%; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; }
+    .con-shell .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 255, 176, 0.2); }
+    .con-shell .btn-primary:active { transform: scale(0.97); }
+    .con-shell .btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px; font-size: 11px; cursor: pointer; width: 100%; margin-top: 12px; transition: all 0.2s ease; }
+    .con-shell .btn-secondary:hover { color: var(--text-main); border-color: var(--text-dim); }
+    .con-shell .timer-container { display: flex; flex-direction: column; gap: 12px; }
+    .con-shell .timer-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .con-shell .btn-cancel { background: transparent; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; text-decoration: underline; }
+    .con-shell .help-trigger { background: transparent; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; text-align: left; padding: 0; margin-top: 20px; }
+    .con-shell .help-panel { display: none; font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); flex-direction: column; gap: 16px; }
+    .con-shell .help-section { display: flex; flex-direction: column; gap: 4px; }
+    .con-shell .help-section strong { color: var(--text-main); font-size: 11px; text-transform: uppercase; }
+    .con-shell .security-note { color: var(--text-main); padding: 8px; border: 1px solid var(--border); font-size: 11px; font-style: italic; }
+    .con-shell .privacy-statement { margin-top: auto; font-size: 10px; color: var(--text-dim); text-align: center; line-height: 1.4; padding-top: 20px; }
+    .con-shell .status-text { font-size: 10px; color: var(--accent); text-align: center; margin-top: 8px; height: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="con-shell">
+<div>
+  <span class="label-tiny">Discord Integration</span>
+  <input type="text" id="webhookUrl" class="input-field" placeholder="Webhook URL">
+  <input type="text" id="userId" class="input-field" placeholder="Your User ID">
+  <input type="text" id="roleId" class="input-field" placeholder="Role ID (for coalition pings)">
+  <button id="saveSettings" class="btn-primary">Save Configuration</button>
+  <button id="clearAll" class="btn-secondary" style="color: #ff4f4f; border-color: #442222;">Clear All Data</button>
+  <button id="enableNotifications" class="btn-secondary">Test Browser Alerts</button>
+  <div id="saveStatus" class="status-text"></div>
+</div>
+
+    <div>
+      <span class="label-tiny">New Event Timer</span>
+      <input type="text" id="eventName" class="input-field" placeholder="Event name (e.g. City Capture)">
+      <input type="text" id="eventNotes" class="input-field" placeholder="Additional details...">
+      
+      <span class="label-tiny">Notify</span>
+      <select id="pingTarget" class="select-field">
+        <option value="me">Ping Me</option>
+        <option value="role">Ping Role</option>
+      </select>
+
+      <div class="time-bar">
+        <div class="time-unit">
+          <input type="number" id="hrs" value="0" min="0">
+          <span>hr</span>
+        </div>
+        <div class="time-unit">
+          <input type="number" id="mins" value="0" min="0">
+          <span>min</span>
+        </div>
+        <div class="time-unit">
+          <input type="number" id="secs" value="0" min="0">
+          <span>sec</span>
+        </div>
+      </div>
+      <button id="startTimer" class="btn-primary">Initialize Alert</button>
+    </div>
+
+    <div>
+      <span class="label-tiny">Pending Alerts</span>
+      <div id="timerList" class="timer-container"></div>
+    </div>
+
+    <div>
+      <button id="toggleHelp" class="help-trigger">Setup Guide & Security</button>
+      <div id="helpContent" class="help-panel" style="display: none;">
+        <div class="help-section">
+          <strong>Discord Webhook Setup</strong>
+          <div>Open your server settings &rarr; Integrations &rarr; Webhooks. Create a new webhook and copy the URL.</div>
+        </div>
+        <div class="help-section">
+          <strong>Getting IDs</strong>
+          <div>Enable 'Developer Mode' in User Settings &rarr; Advanced. Right-click a User or Role &rarr; 'Copy ID'.</div>
+        </div>
+        <div class="help-section">
+          <strong>Security Protocol</strong>
+          <div>A webhook URL is a direct key to your server. Do not share this link.</div>
+        </div>
+        <div class="security-note">
+          If you suspect your webhook has been compromised, delete it immediately.
+        </div>
+      </div>
+    </div>
+
+    <div class="privacy-statement">
+      <strong>Privacy Statement:</strong><br>
+      No data is collected or sent to external servers, except for the notification sent to your specified Discord Webhook.
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

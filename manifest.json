@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "CoN Timer Assistant",
+  "version": "1.5",
+  "description": "Strategic timer and Discord notifier for Conflict of Nations.",
+  "permissions": ["sidePanel", "alarms", "storage", "notifications"],
+  "host_permissions": ["https://discord.com/*"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "icon128.png"
+  }
+}
