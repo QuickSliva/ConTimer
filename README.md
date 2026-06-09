@@ -6,12 +6,15 @@ A lightweight Chrome Extension designed for **Conflict of Nations** players to t
 - Discord Integration: Get pinged via Webhooks when your event is complete.
 - Role Pings: Choose between pinging yourself or a specific Coalition Role.
 - Privacy First: All data is stored locally in your browser.
+- Itelligence notes, keep track of users easily
 
 ##  Installation
 1. Download this repository as a ZIP and extract it.
 2. Open Chrome and go to `chrome://extensions/`.
 3. Enable Developer Mode (top right).
 4. Click Load unpacked and select the folder containing the files.
+
+(we plan on releasing to the chrome exstention store once out of beta)
 
 ##  Security Note
 Your Discord Webhook URL is a sensitive key. Anyone with this URL can send messages to your server and potentially grief it. Never share your webhook URL or upload your configured `chrome.storage` to a public place.
