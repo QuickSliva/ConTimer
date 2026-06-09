@@ -1,119 +1,301 @@
 <!DOCTYPE html>
-<html lang="en" style="background-color: #0a0a0a;">
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>CoN Timer</title>
   <style>
-    /* All your existing styles remain the same */
-    html, body { margin: 0; padding: 0; background-color: #0a0a0a !important; overflow-x: hidden; }
-    .con-shell {
-      --bg: #0a0a0a; --surface: #111111; --border: #222222; --text-main: #efefef; --text-dim: #666666; --accent: #4fffb0; 
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
-      background-color: var(--bg); color: var(--text-main); padding: 24px; display: flex; flex-direction: column; gap: 32px; min-height: 100vh; box-sizing: border-box; border: none; -webkit-font-smoothing: antialiased;
+    :root {
+      --bg: #ffffff;
+      --rail-bg: #fafafa;
+      --active-bg: #f0f0f0;
+      --text-main: #000000;
+      --text-dim: #666666;
+      --border: #e0e0e0;
+      --input-bg: #ffffff;
+      --transition: all 0.15s ease;
     }
-    .con-shell .label-tiny { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 8px; display: block; }
-    .con-shell .input-field { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text-main); padding: 8px 0; margin-bottom: 20px; outline: none; font-size: 14px; transition: border-color 0.3s ease; box-sizing: border-box; }
-    .con-shell .input-field:focus { border-bottom-color: var(--accent); }
-    
-    /* New style for the dropdown */
-    .con-shell .select-field { 
-      width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text-main); 
-      padding: 8px; margin-bottom: 20px; outline: none; font-size: 13px; cursor: pointer; 
-    }
-    .con-shell .select-field:focus { border-color: var(--accent); }
 
-    .con-shell .time-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 8px; width: 100%; box-sizing: border-box; }
-    .con-shell .time-unit { display: flex; align-items: baseline; gap: 4px; flex: 1; justify-content: center; }
-    .con-shell .time-unit input { width: 30px; background: transparent; border: none; color: var(--text-main); font-size: 16px; text-align: center; outline: none; padding: 0; -moz-appearance: textfield; }
-    .con-shell .time-unit input::-webkit-outer-spin-button, .con-shell .time-unit input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .con-shell .time-unit span { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
-    .con-shell .btn-primary { background: var(--accent); color: #000; border: none; padding: 12px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; width: 100%; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; }
-    .con-shell .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 255, 176, 0.2); }
-    .con-shell .btn-primary:active { transform: scale(0.97); }
-    .con-shell .btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px; font-size: 11px; cursor: pointer; width: 100%; margin-top: 12px; transition: all 0.2s ease; }
-    .con-shell .btn-secondary:hover { color: var(--text-main); border-color: var(--text-dim); }
-    .con-shell .timer-container { display: flex; flex-direction: column; gap: 12px; }
-    .con-shell .timer-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-    .con-shell .btn-cancel { background: transparent; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; text-decoration: underline; }
-    .con-shell .help-trigger { background: transparent; border: none; color: var(--text-dim); font-size: 11px; cursor: pointer; text-align: left; padding: 0; margin-top: 20px; }
-    .con-shell .help-panel { display: none; font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); flex-direction: column; gap: 16px; }
-    .con-shell .help-section { display: flex; flex-direction: column; gap: 4px; }
-    .con-shell .help-section strong { color: var(--text-main); font-size: 11px; text-transform: uppercase; }
-    .con-shell .security-note { color: var(--text-main); padding: 8px; border: 1px solid var(--border); font-size: 11px; font-style: italic; }
-    .con-shell .privacy-statement { margin-top: auto; font-size: 10px; color: var(--text-dim); text-align: center; line-height: 1.4; padding-top: 20px; }
-    .con-shell .status-text { font-size: 10px; color: var(--accent); text-align: center; margin-top: 8px; height: 12px; }
+    body.dark-mode {
+      --bg: #0a0a0a;
+      --rail-bg: #111111;
+      --active-bg: #1a1a1a;
+      --text-main: #ffffff;
+      --text-dim: #888888;
+      --border: #222222;
+      --input-bg: #0f0f0f;
+    }
+
+    html, body { 
+      margin: 0; padding: 0; height: 100vh; 
+      background-color: var(--bg); 
+      color: var(--text-main); 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      transition: background-color 0.2s ease;
+    }
+
+    .app-container { display: flex; height: 100vh; width: 100%; }
+
+    .icon-rail {
+      width: 60px; background-color: var(--rail-bg);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 30px 0; gap: 24px; border-right: 1px solid var(--border);
+      transition: background-color 0.2s ease;
+    }
+
+    .rail-item {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 1px solid var(--border); border-radius: 0;
+      color: var(--text-dim); transition: var(--transition);
+      font-size: 10px; font-weight: 700; text-align: center;
+    }
+    .rail-item:hover { border-color: var(--text-main); color: var(--text-main); }
+    .rail-item.active { background: var(--text-main); border-color: var(--text-main); color: var(--bg); }
+
+    .main-panel {
+      flex: 1; background-color: var(--bg);
+      display: flex; flex-direction: column; overflow-y: auto;
+      transition: background-color 0.2s ease;
+    }
+
+    .panel-header {
+      padding: 32px 40px 20px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .panel-header h1 { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+
+    .theme-toggle {
+      width: 32px; height: 32px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text-main);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: var(--transition);
+    }
+
+    .content-section { display: none; padding: 0 40px 40px 40px; animation: fadeIn 0.1s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .section-label {
+      font-size: 11px; font-weight: 700; color: var(--text-dim);
+      text-transform: uppercase; margin-bottom: 20px; display: block;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--text-main); }
+
+    .input-field, .select-field {
+      background: var(--input-bg); border: 1px solid var(--border);
+      color: var(--text-main); padding: 10px 12px; border-radius: 0;
+      outline: none; font-size: 13px; transition: var(--transition);
+    }
+    .input-field:focus, .select-field:focus { border-color: var(--text-main); }
+
+    .time-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+    .time-box { border: 1px solid var(--border); padding: 12px; text-align: center; }
+    .time-box input {
+      width: 100%; background: transparent; border: none;
+      color: var(--text-main); font-size: 16px; font-weight: 700;
+      text-align: center; outline: none;
+    }
+    .time-box span { font-size: 10px; color: var(--text-dim); text-transform: uppercase; display: block; margin-top: 4px; }
+
+    .btn {
+      padding: 12px 20px; border-radius: 0; font-weight: 600; font-size: 13px;
+      cursor: pointer; transition: var(--transition); border: 1px solid var(--text-main);
+      text-align: center;
+    }
+    .btn-primary { background: var(--text-main); color: var(--bg); }
+    .btn-secondary { background: var(--bg); color: var(--text-main); }
+    .btn-danger { color: #cc0000; border-color: #cc0000; background: transparent; }
+
+    .timer-list, .intel-list { display: flex; flex-direction: column; gap: 12px; }
+    .timer-item, .intel-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px; border: 1px solid var(--border); cursor: pointer; transition: var(--transition);
+    }
+    .timer-item:hover, .intel-item:hover { background: var(--active-bg); }
+    .timer-info, .intel-info { display: flex; flex-direction: column; gap: 4px; }
+    .timer-name, .intel-name { font-size: 14px; font-weight: 600; }
+    .timer-time, .intel-preview { font-family: monospace; font-size: 13px; color: var(--text-dim); }
+    .btn-remove { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 11px; font-weight: 600; }
+    .btn-remove:hover { color: #cc0000; }
+
+    .intel-detail-view { display: none; flex-direction: column; gap: 20px; }
+    .intel-detail-view.active { display: flex; }
+
+    .help-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    .help-card { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+    .help-card h3 { font-size: 13px; margin: 0 0 8px 0; font-weight: 700; }
+    .help-card p { font-size: 13px; color: var(--text-dim); margin: 0; line-height: 1.5; }
+
+    .calc-container { border: 1px solid var(--border); padding: 20px; margin-bottom: 32px; }
+    .calc-result {
+      margin-top: 16px; padding: 12px; background: var(--active-bg);
+      border: 1px solid var(--border); text-align: center;
+      font-family: monospace; font-size: 16px; font-weight: 700;
+    }
+
+    .status-text { font-size: 11px; text-align: center; color: var(--text-dim); margin-top: 10px; height: 14px; }
   </style>
 </head>
-<body>
+<body id="body-element">
 
-  <div class="con-shell">
-<div>
-  <span class="label-tiny">Discord Integration</span>
-  <input type="text" id="webhookUrl" class="input-field" placeholder="Webhook URL">
-  <input type="text" id="userId" class="input-field" placeholder="Your User ID">
-  <input type="text" id="roleId" class="input-field" placeholder="Role ID (for coalition pings)">
-  <button id="saveSettings" class="btn-primary">Save Configuration</button>
-  <button id="clearAll" class="btn-secondary" style="color: #ff4f4f; border-color: #442222;">Clear All Data</button>
-  <button id="enableNotifications" class="btn-secondary">Test Browser Alerts</button>
-  <div id="saveStatus" class="status-text"></div>
-</div>
+  <div class="app-container">
+    <div class="icon-rail">
+      <div class="rail-item active" id="nav-config" title="Settings">SET</div>
+      <div class="rail-item" id="nav-create" title="Add Timer">ADD</div>
+      <div class="rail-item" id="nav-list" title="Timers">LIST</div>
+      <div class="rail-item" id="nav-intel" title="Intelligence">INT</div>
+      <div class="rail-item" id="nav-help" title="Guide">HLP</div>
+    </div>
 
-    <div>
-      <span class="label-tiny">New Event Timer</span>
-      <input type="text" id="eventName" class="input-field" placeholder="Event name (e.g. City Capture)">
-      <input type="text" id="eventNotes" class="input-field" placeholder="Additional details...">
-      
-      <span class="label-tiny">Notify</span>
-      <select id="pingTarget" class="select-field">
-        <option value="me">Ping Me</option>
-        <option value="role">Ping Role</option>
-      </select>
+    <div class="main-panel">
+      <div class="panel-header">
+        <h1 id="header-title">Settings</h1>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">◐</button>
+      </div>
 
-      <div class="time-bar">
-        <div class="time-unit">
-          <input type="number" id="hrs" value="0" min="0">
-          <span>hr</span>
+      <!-- Settings Section -->
+      <div id="section-config" class="content-section active">
+        <span class="section-label">Discord API Configuration</span>
+        <div class="form-group">
+          <div class="field">
+            <label>Webhook URL</label>
+            <input type="text" id="webhookUrl" class="input-field" placeholder="Enter URL">
+          </div>
+          <div class="field">
+            <label>User ID (for personal pings)</label>
+            <input type="text" id="userId" class="input-field" placeholder="Enter ID">
+          </div>
+          <div class="field">
+            <label>Role ID (for alliance pings)</label>
+            <input type="text" id="roleId" class="input-field" placeholder="Enter ID">
+          </div>
         </div>
-        <div class="time-unit">
-          <input type="number" id="mins" value="0" min="0">
-          <span>min</span>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button id="enableNotifications" class="btn btn-secondary">Test Alerts</button>
+            <button id="clearAll" class="btn btn-danger">Reset All</button>
+          </div>
         </div>
-        <div class="time-unit">
-          <input type="number" id="secs" value="0" min="0">
-          <span>sec</span>
+        <div id="saveStatus" class="status-text"></div>
+      </div>
+
+      <!-- Add Timer Section -->
+      <div id="section-create" class="content-section">
+        <span class="section-label">4x Speed Calculator</span>
+        <div class="calc-container">
+          <div class="time-grid" style="margin-bottom: 16px;">
+            <div class="time-box"><input type="number" id="calc-hrs" value="0"><span>Hrs</span></div>
+            <div class="time-box"><input type="number" id="calc-mins" value="0"><span>Min</span></div>
+            <div class="time-box"><input type="number" id="calc-secs" value="0"><span>Sec</span></div>
+          </div>
+          <button id="calc-btn" class="btn btn-secondary" style="width: 100%;">Calculate / 4</button>
+          <div id="calc-output" class="calc-result">00:00:00</div>
+        </div>
+
+        <span class="section-label">Timer Parameters</span>
+        <div class="form-group">
+          <div class="field">
+            <label>Event Name</label>
+            <input type="text" id="eventName" class="input-field" placeholder="e.g. Capital Capture">
+          </div>
+          <div class="field">
+            <label>Additional Notes</label>
+            <input type="text" id="eventNotes" class="input-field" placeholder="Details...">
+          </div>
+          <div class="field">
+            <label>Ping Priority</label>
+            <select id="pingTarget" class="select-field">
+              <option value="me">Personal (@User)</option>
+              <option value="role">Alliance (@Role)</option>
+              <option value="none">No Ping (Message only)</option>
+            </select>
+          </div>
+        </div>
+
+        <span class="section-label">Duration</span>
+        <div class="time-grid">
+          <div class="time-box"><input type="number" id="hrs" value="0"><span>Hrs</span></div>
+          <div class="time-box"><input type="number" id="mins" value="0"><span>Min</span></div>
+          <div class="time-box"><input type="number" id="secs" value="0"><span>Sec</span></div>
+        </div>
+        <button id="startTimer" class="btn btn-primary" style="width: 100%;">Initialize Timer</button>
+      </div>
+
+      <!-- Timer List Section -->
+      <div id="section-list" class="content-section">
+        <span class="section-label">Active Alerts</span>
+        <div id="timerList" class="timer-list"></div>
+      </div>
+
+      <!-- Intelligence Section -->
+      <div id="section-intel" class="content-section">
+        <span class="section-label">Intelligence Database</span>
+        
+        <div id="intel-list-view">
+          <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+            <input type="text" id="new-enemy-name" class="input-field" placeholder="Enemy Name..." style="flex: 1;">
+            <button id="add-enemy-btn" class="btn btn-primary">ADD</button>
+          </div>
+          <div id="intelList" class="intel-list"></div>
+        </div>
+
+        <div id="intel-detail-view" class="intel-detail-view">
+          <button id="back-to-intel" class="btn btn-secondary" style="width: fit-content; margin-bottom: 20px;">&larr; Back</button>
+          <div class="form-group">
+            <div class="field">
+              <label>Enemy Name</label>
+              <input type="text" id="edit-enemy-name" class="input-field">
+            </div>
+            <div class="field">
+              <label>Coalition</label>
+              <input type="text" id="edit-enemy-coalition" class="input-field" placeholder="Coalition name">
+            </div>
+            <div class="field">
+              <label>Rank / Tier</label>
+              <input type="text" id="edit-enemy-rank" class="input-field" placeholder="e.g. General / Tier 4">
+            </div>
+            <div class="field">
+              <label>Known Research</label>
+              <input type="text" id="edit-enemy-research" class="input-field" placeholder="e.g. Air Force Focus, Level 5 Tanks">
+            </div>
+            <div class="field">
+              <label>Notable Events</label>
+              <input type="text" id="edit-enemy-events" class="input-field" placeholder="e.g. Lost Capital on Day 10">
+            </div>
+            <div class="field">
+              <label>General Notes</label>
+              <input type="text" id="edit-enemy-notes" class="input-field" placeholder="Strategy, sleep patterns, etc.">
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button id="save-enemy-btn" class="btn btn-primary" style="flex: 1;">Save Profile</button>
+            <button id="delete-enemy-btn" class="btn btn-danger" style="width: 100px;">Delete</button>
+          </div>
         </div>
       </div>
-      <button id="startTimer" class="btn-primary">Initialize Alert</button>
-    </div>
 
-    <div>
-      <span class="label-tiny">Pending Alerts</span>
-      <div id="timerList" class="timer-container"></div>
-    </div>
-
-    <div>
-      <button id="toggleHelp" class="help-trigger">Setup Guide & Security</button>
-      <div id="helpContent" class="help-panel" style="display: none;">
-        <div class="help-section">
-          <strong>Discord Webhook Setup</strong>
-          <div>Open your server settings &rarr; Integrations &rarr; Webhooks. Create a new webhook and copy the URL.</div>
-        </div>
-        <div class="help-section">
-          <strong>Getting IDs</strong>
-          <div>Enable 'Developer Mode' in User Settings &rarr; Advanced. Right-click a User or Role &rarr; 'Copy ID'.</div>
-        </div>
-        <div class="help-section">
-          <strong>Security Protocol</strong>
-          <div>A webhook URL is a direct key to your server. Do not share this link.</div>
-        </div>
-        <div class="security-note">
-          If you suspect your webhook has been compromised, delete it immediately.
+      <!-- Help Section -->
+      <div id="section-help" class="content-section">
+        <span class="section-label">Technical Documentation</span>
+        <div class="help-grid">
+          <div class="help-card">
+            <h3>1. Webhook Setup</h3>
+            <p>Navigate to Server Settings &rarr; Integrations &rarr; Webhooks. Create a webhook and paste the URL into Settings.</p>
+          </div>
+          <div class="help-card">
+            <h3>2. Identification IDs</h3>
+            <p>Enable 'Developer Mode' in Discord User Settings. Right-click any user or role to copy their unique ID.</p>
+          </div>
+          <div class="help-card">
+            <h3>3. Security</h3>
+            <p>Webhook URLs grant write-access to your channel. Store the URL securely and never share it.</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="privacy-statement">
-      <strong>Privacy Statement:</strong><br>
-      No data is collected or sent to external servers, except for the notification sent to your specified Discord Webhook.
     </div>
   </div>
 
